@@ -1,0 +1,67 @@
+package main
+
+import (
+	"context"
+	"net/http"
+
+	"github.com/blavity/do-app-action/utils"
+	"github.com/digitalocean/godo"
+	gha "github.com/sethvargo/go-githubactions"
+)
+
+func main() {
+	ctx := context.Background()
+	a := gha.New()
+
+	in, err := getInputs(a)
+	if err != nil {
+		a.Fatalf("failed to get inputs: %v", err)
+	}
+	a.AddMask(in.token)
+
+	if in.appID == "" && in.appName == "" && !in.fromPRPreview {
+		a.Fatalf("either app_id, app_name, or from_pr_preview must be set")
+	}
+
+	ghCtx, err := a.Context()
+	if err != nil {
+		a.Fatalf("failed to get GitHub context: %v", err)
+	}
+
+	do := godo.NewFromToken(in.token)
+	do.UserAgent = "do-app-action/delete"
+
+	appID := in.appID
+	if appID == "" {
+		appName := in.appName
+		if appName == "" {
+			repoOwner, repo := ghCtx.Repo()
+			prRef, err := utils.PRRefFromContext(ghCtx)
+			if err != nil {
+				a.Fatalf("failed to get PR number: %v", err)
+			}
+			appName = utils.GenerateAppName(repoOwner, repo, prRef)
+		}
+
+		app, err := utils.FindAppByName(ctx, do.Apps, appName)
+		if err != nil {
+			a.Fatalf("failed to find app: %v", err)
+		}
+		if app == nil {
+			if in.ignoreNotFound {
+				a.Infof("app %q not found, ignoring", appName)
+				return
+			}
+			a.Fatalf("app %q not found", appName)
+		}
+		appID = app.ID
+	}
+
+	if resp, err := do.Apps.Delete(ctx, appID); err != nil {
+		if resp.StatusCode == http.StatusNotFound && in.ignoreNotFound {
+			a.Infof("app %q not found, ignoring", appID)
+			return
+		}
+		a.Fatalf("failed to delete app: %v", err)
+	}
+}

@@ -1,0 +1,17 @@
+# Compiled binaries (built by Dockerfile, not checked in)
+/deploy/deploy
+/delete/delete
+/archive/archive
+/unarchive/unarchive
+
+# Test output
+*.out
+coverage.txt
+
+# Go build cache
+/vendor/
+
+# Editor
+.idea/
+.vscode/
+*.swp
