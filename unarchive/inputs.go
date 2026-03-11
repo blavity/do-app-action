@@ -30,15 +30,10 @@ func getInputs(a *gha.Action) (inputs, error) {
 		utils.InputAsString(a, "app_id", false, &in.appID),
 		utils.InputAsBool(a, "from_pr_preview", false, &in.fromPRPreview),
 		utils.InputAsBool(a, "ignore_not_found", false, &in.ignoreNotFound),
+		utils.InputAsBool(a, "wait_for_live", false, &in.waitForLive),
 		utils.InputAsInt(a, "wait_timeout", false, &in.waitTimeout),
 	} {
 		if err != nil {
-			return in, err
-		}
-	}
-	// Only override waitForLive when the input is explicitly provided.
-	if raw := a.GetInput("wait_for_live"); raw != "" {
-		if err := utils.InputAsBool(a, "wait_for_live", false, &in.waitForLive); err != nil {
 			return in, err
 		}
 	}

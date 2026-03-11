@@ -24,7 +24,6 @@ func InputAsBool(a *gha.Action, input string, required bool, target *bool) error
 		if required {
 			return fmt.Errorf("input %q is required", input)
 		}
-		*target = false
 		return nil
 	}
 	val, err := strconv.ParseBool(str)
