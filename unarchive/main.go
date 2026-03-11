@@ -96,12 +96,25 @@ func main() {
 }
 
 // waitForLiveURL polls until the app has a non-empty LiveURL or timeout is reached.
+// A timeoutSecs value of 0 means poll indefinitely until the app is live.
 func waitForLiveURL(ctx context.Context, a *gha.Action, do *godo.Client, appID string, timeoutSecs int) string {
-	deadline := time.Now().Add(time.Duration(timeoutSecs) * time.Second)
 	pollInterval := 10 * time.Second
 
-	a.Infof("Waiting up to %ds for app %q to become live...", timeoutSecs, appID)
-	for time.Now().Before(deadline) {
+	if timeoutSecs == 0 {
+		a.Infof("Waiting indefinitely for app %q to become live...", appID)
+	} else {
+		a.Infof("Waiting up to %ds for app %q to become live...", timeoutSecs, appID)
+	}
+
+	var deadline time.Time
+	if timeoutSecs > 0 {
+		deadline = time.Now().Add(time.Duration(timeoutSecs) * time.Second)
+	}
+
+	for {
+		if timeoutSecs > 0 && time.Now().After(deadline) {
+			break
+		}
 		app, _, err := do.Apps.Get(ctx, appID)
 		if err != nil {
 			a.Warningf("error polling app status: %v", err)
