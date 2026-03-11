@@ -144,6 +144,10 @@ This action uses [Semantic Versioning](https://semver.org/). Pin to a major tag 
 
 See [CONTRIBUTING.md](CONTRIBUTING.md).
 
+## Trademarks
+
+DigitalOcean and App Platform are trademarks or registered trademarks of DigitalOcean, LLC. Blavity, Inc. is not affiliated with, endorsed by, or sponsored by DigitalOcean, LLC. All other trademarks are the property of their respective owners.
+
 ## License
 
-MIT — see [LICENSE](LICENSE). Portions derived from [digitalocean/app_action](https://github.com/digitalocean/app_action), Copyright (c) 2024 DigitalOcean, LLC.
+MIT — see [LICENSE](LICENSE). Portions derived from [digitalocean/app_action](https://github.com/digitalocean/app_action), Copyright (c) 2024–2026 DigitalOcean, LLC.
