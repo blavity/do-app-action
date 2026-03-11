@@ -58,7 +58,7 @@ func main() {
 	}
 
 	if resp, err := do.Apps.Delete(ctx, appID); err != nil {
-		if resp.StatusCode == http.StatusNotFound && in.ignoreNotFound {
+		if resp != nil && resp.StatusCode == http.StatusNotFound && in.ignoreNotFound {
 			a.Infof("app %q not found, ignoring", appID)
 			return
 		}
