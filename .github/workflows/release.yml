@@ -1,3 +1,9 @@
+# Release workflow
+#
+# Triggered by semver tags pushed by release-please (e.g., v1.2.3).
+# release-please already creates the GitHub Release; this job only
+# maintains the floating major-version tag (v1 → latest v1.x.y).
+
 name: Release
 
 on:
@@ -9,18 +15,13 @@ permissions:
   contents: write
 
 jobs:
-  release:
-    name: Create Release
+  move-major-tag:
+    name: Move floating major tag
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
-      - name: Create GitHub Release
-        uses: softprops/action-gh-release@v2
-        with:
-          generate_release_notes: true
 
       - name: Move floating major tag
         env:

@@ -1,0 +1,45 @@
+# Release Please Workflow
+#
+# Purpose
+# Automates versioning, changelog generation, and GitHub releases for
+# do-app-action using conventional commits.
+#
+# How it works:
+#   1. On push to main → creates/updates a release PR with changelog + version bump
+#   2. On release PR merge → creates GitHub Release + git tag (e.g., v1.2.3)
+#   3. The tag triggers release.yml which moves the floating major tag (v1)
+#
+# Conventional commits drive changelog generation:
+#   feat(archive): add pagination support    → Features
+#   fix(deploy): handle timeout              → Bug Fixes
+#   chore: update dependencies               → Miscellaneous
+#
+# Callers reference:
+#   @v1       — latest stable (recommended)
+#   @v1.2.3   — pinned to exact version
+
+name: Release Please
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  release-please:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Generate GitHub App Token
+        id: app-token
+        uses: actions/create-github-app-token@v2
+        with:
+          app-id: ${{ secrets.RELEASE_AGENT_APP_ID }}
+          private-key: ${{ secrets.RELEASE_AGENT_APP_PRIVATE_KEY }}
+
+      - name: Run Release Please
+        uses: googleapis/release-please-action@v4
+        with:
+          token: ${{ steps.app-token.outputs.token }}
