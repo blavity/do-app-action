@@ -44,13 +44,14 @@ Scopes: `deploy`, `delete`, `archive`, `unarchive`, `utils`, `ci`, `docs`.
 
 ## Releasing
 
-1. Merge to `main`.
-2. Create a GitHub release with a semver tag (`v1.2.3`).
-3. Move the floating major tag (`v1`) to the new commit:
-   ```bash
-   git tag -fa v1 -m "Update v1 to v1.2.3"
-   git push origin v1 --force
-   ```
+Releases are fully automated via [release-please](https://github.com/googleapis/release-please):
+
+1. Merge commits to `main` using [Conventional Commits](https://www.conventionalcommits.org/) (e.g. `fix(delete): ...`, `feat(deploy): ...`).
+2. release-please will open or update a release PR aggregating the changes.
+3. Merge the release PR — release-please creates the semver tag (`v1.x.x`) and GitHub Release automatically.
+4. The `release.yml` workflow fires and moves the floating `v1` tag to the new release commit.
+
+No manual tagging or `git push --force` is required.
 
 ## Attribution
 
