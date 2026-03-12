@@ -4,9 +4,11 @@ import (
 	"os"
 	"testing"
 
-	"github.com/blavity/do-app-action/utils"
 	gha "github.com/sethvargo/go-githubactions"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+
+	"github.com/blavity/do-app-action/utils"
 )
 
 func actionWithInputs(t *testing.T, inputs map[string]string) *gha.Action {
@@ -26,7 +28,7 @@ func TestInputAsString_Required_Present(t *testing.T) {
 }
 
 func TestInputAsString_Required_Missing(t *testing.T) {
-	os.Unsetenv("INPUT_TOKEN")
+	require.NoError(t, os.Unsetenv("INPUT_TOKEN"))
 	a := gha.New()
 	var s string
 	err := utils.InputAsString(a, "token", true, &s)

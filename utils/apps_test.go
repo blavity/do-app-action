@@ -4,10 +4,11 @@ import (
 	"context"
 	"testing"
 
-	"github.com/blavity/do-app-action/utils"
 	"github.com/digitalocean/godo"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+
+	"github.com/blavity/do-app-action/utils"
 )
 
 type mockAppsService struct {

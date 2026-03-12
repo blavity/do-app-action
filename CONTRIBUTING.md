@@ -4,26 +4,39 @@
 
 ### Prerequisites
 
-- Go 1.23+
-- Docker (for local Dockerfile builds)
+- [mise](https://mise.jdx.dev/) — manages Go, golangci-lint, and task versions
 
 ### Setup
 
 ```bash
 git clone https://github.com/blavity/do-app-action
 cd do-app-action
+mise install        # installs Go, golangci-lint, task (pinned in mise.toml)
 go mod download
 ```
 
-### Running tests
+Optional: install pre-commit hooks to catch issues before pushing:
 
 ```bash
-go test ./...
+pip install pre-commit
+pre-commit install
 ```
+
+### Common tasks
+
+| Command      | What it does                           |
+| ------------ | -------------------------------------- |
+| `task check` | fmt + lint + test — run before pushing |
+| `task fmt`   | Format code (golangci-lint fmt)        |
+| `task lint`  | Run golangci-lint                      |
+| `task test`  | Run tests with race detector           |
+| `task build` | Build all action binaries              |
 
 ### Building binaries locally
 
 ```bash
+task build
+# or directly:
 go build -o /tmp/deploy ./deploy
 go build -o /tmp/delete ./delete
 go build -o /tmp/archive ./archive

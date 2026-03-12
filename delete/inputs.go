@@ -1,8 +1,9 @@
 package main
 
 import (
-	"github.com/blavity/do-app-action/utils"
 	gha "github.com/sethvargo/go-githubactions"
+
+	"github.com/blavity/do-app-action/utils"
 )
 
 // inputs are the inputs for the delete action.

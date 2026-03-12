@@ -6,9 +6,10 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/blavity/do-app-action/utils"
 	"github.com/digitalocean/godo"
 	gha "github.com/sethvargo/go-githubactions"
+
+	"github.com/blavity/do-app-action/utils"
 )
 
 func main() {
@@ -111,10 +112,7 @@ func waitForLiveURL(ctx context.Context, a *gha.Action, do *godo.Client, appID s
 		deadline = time.Now().Add(time.Duration(timeoutSecs) * time.Second)
 	}
 
-	for {
-		if timeoutSecs > 0 && time.Now().After(deadline) {
-			break
-		}
+	for timeoutSecs == 0 || time.Now().Before(deadline) {
 		app, _, err := do.Apps.Get(ctx, appID)
 		if err != nil {
 			a.Warningf("error polling app status: %v", err)

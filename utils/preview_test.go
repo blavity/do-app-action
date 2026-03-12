@@ -3,8 +3,9 @@ package utils_test
 import (
 	"testing"
 
-	"github.com/blavity/do-app-action/utils"
 	"github.com/stretchr/testify/assert"
+
+	"github.com/blavity/do-app-action/utils"
 )
 
 func TestGenerateAppName_Length(t *testing.T) {
