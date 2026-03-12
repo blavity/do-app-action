@@ -21,16 +21,17 @@ linters:
     - noctx         # http requests without context
     - unparam       # unused function parameters
 
-linters-settings:
-  gofumpt:
-    extra-rules: true
-  goimports:
-    local-prefixes: github.com/blavity/do-app-action
-  gocritic:
-    enabled-tags:
-      - diagnostic
-      - style
-      - performance
+  settings:
+    gofumpt:
+      extra-rules: true
+    goimports:
+      local-prefixes:
+        - github.com/blavity/do-app-action
+    gocritic:
+      enabled-tags:
+        - diagnostic
+        - style
+        - performance
 
 issues:
   max-same-issues: 0
