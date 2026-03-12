@@ -1,0 +1,37 @@
+version: "2"
+
+linters:
+  default: none
+  enable:
+    # correctness / bugs
+    - errcheck      # unchecked errors
+    - gosimple      # simplification suggestions
+    - govet         # go vet checks
+    - ineffassign   # unused assignments
+    - staticcheck   # static analysis (SA*, S*, QF*, ST*)
+    - unused        # unused code
+
+    # style / formatting
+    - gofumpt       # stricter gofmt superset
+    - goimports     # import grouping and ordering
+
+    # additional useful checks
+    - gocritic      # opinionated but practical suggestions
+    - nilerr        # returning nil after checking err != nil
+    - noctx         # http requests without context
+    - unparam       # unused function parameters
+
+linters-settings:
+  gofumpt:
+    extra-rules: true
+  goimports:
+    local-prefixes: github.com/blavity/do-app-action
+  gocritic:
+    enabled-tags:
+      - diagnostic
+      - style
+      - performance
+
+issues:
+  max-same-issues: 0
+  max-issues-per-linter: 0
