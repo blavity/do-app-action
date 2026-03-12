@@ -32,14 +32,7 @@ jobs:
   release-please:
     runs-on: ubuntu-latest
     steps:
-      - name: Generate GitHub App Token
-        id: app-token
-        uses: actions/create-github-app-token@v2
-        with:
-          app-id: ${{ secrets.RELEASE_AGENT_APP_ID }}
-          private-key: ${{ secrets.RELEASE_AGENT_APP_PRIVATE_KEY }}
-
       - name: Run Release Please
         uses: googleapis/release-please-action@v4
         with:
-          token: ${{ steps.app-token.outputs.token }}
+          token: ${{ secrets.GITHUB_TOKEN }}
