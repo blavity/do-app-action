@@ -4,9 +4,10 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/blavity/do-app-action/utils"
 	"github.com/digitalocean/godo"
 	gha "github.com/sethvargo/go-githubactions"
+
+	"github.com/blavity/do-app-action/utils"
 )
 
 func main() {

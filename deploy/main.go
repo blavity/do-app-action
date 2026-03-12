@@ -10,10 +10,11 @@ import (
 	"os"
 	"time"
 
-	"github.com/blavity/do-app-action/utils"
 	"github.com/digitalocean/godo"
 	gha "github.com/sethvargo/go-githubactions"
 	"sigs.k8s.io/yaml"
+
+	"github.com/blavity/do-app-action/utils"
 )
 
 func main() {
@@ -172,12 +173,21 @@ func (d *deployer) printLogs(ctx context.Context, appID, deployID string, logTyp
 	if logs.LiveURL == "" {
 		return
 	}
-	resp, err := d.httpClient.Get(logs.LiveURL)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, logs.LiveURL, http.NoBody)
+	if err != nil {
+		d.action.Warningf("failed to build %s log request: %v", label, err)
+		return
+	}
+	resp, err := d.httpClient.Do(req)
 	if err != nil {
 		d.action.Warningf("failed to fetch %s log stream: %v", label, err)
 		return
 	}
-	defer resp.Body.Close()
+	defer func() {
+		if err := resp.Body.Close(); err != nil {
+			d.action.Warningf("failed to close %s log response body: %v", label, err)
+		}
+	}()
 	var buf bytes.Buffer
 	if _, err := io.Copy(&buf, resp.Body); err != nil {
 		d.action.Warningf("failed to read %s logs: %v", label, err)
