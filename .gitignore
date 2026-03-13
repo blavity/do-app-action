@@ -16,7 +16,7 @@ coverage.txt
 .vscode/
 *.swp
 
-# Agent directories
+# Agent working directories (must not be committed)
 .claude/
 .codex/
 .opencode/
