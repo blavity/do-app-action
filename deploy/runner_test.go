@@ -7,7 +7,6 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"os"
-	"strings"
 	"testing"
 	"time"
 
@@ -489,9 +488,10 @@ func TestRun_DeployError_StillSetsOutput(t *testing.T) {
 	// run returns the deploy error; app output is set because app is non-nil.
 	assert.ErrorContains(t, err, "deployment phase")
 
-	// Verify output file was written (app JSON).
+	// Verify the app output was written to GITHUB_OUTPUT despite the deploy error.
+	// gha.Action.SetOutput writes the value using heredoc format:
+	//   key<<_GitHubActionsFileCommandDelimeter_\n<value>\n_GitHubActionsFileCommandDelimeter_\n
 	outputContent, readErr := os.ReadFile(os.Getenv("GITHUB_OUTPUT"))
 	assert.NoError(t, readErr)
-	assert.True(t, strings.Contains(string(outputContent), "app-fail") || len(outputContent) == 0,
-		"expected app output to be set or output file empty")
+	assert.Contains(t, string(outputContent), "app-fail", "expected app ID to be present in output")
 }
