@@ -15,3 +15,11 @@ coverage.txt
 .idea/
 .vscode/
 *.swp
+
+# Agent working directories (must not be committed)
+.claude/
+.codex/
+.opencode/
+.specify/*
+!.specify/memory/
+!.specify/memory/constitution.md
