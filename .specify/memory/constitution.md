@@ -1,13 +1,20 @@
 <!--
 SYNC IMPACT REPORT
 ==================
-Version change: 1.2.1 → 1.3.0
+Version change: 1.2.1 → 1.3.1
 Modified principles: none
 Added sections:
   - Responsible Agentic Use & Pull Request Policy (new standalone section,
     covering scope of autonomy, authorship transparency, PR review policy,
     reversibility preference, and escalation over assumption)
 Removed sections: none
+Wording changes (1.3.0 → 1.3.1):
+  - Principle VII: replaced "Renovate manages automated dependency updates"
+    with "Dependabot manages automated dependency updates"
+  - Security & Supply Chain: replaced "Dependabot/Renovate MUST remain enabled"
+    with "Dependabot MUST remain enabled"
+    Rationale: repo migrated from Renovate to Dependabot; Renovate references
+    were also a Principle IX violation (org-specific shared preset exposed).
 Templates requiring updates:
   - .specify/templates/plan-template.md  ✅ no structural changes required
   - .specify/templates/spec-template.md  ✅ no structural changes required
@@ -120,7 +127,7 @@ Direct dependencies MUST be limited to what is strictly necessary:
 `sigs.k8s.io/yaml` (spec parsing). Adding a new direct dependency requires
 explicit justification in the PR. All GitHub Actions workflow steps MUST be
 pinned to a full commit SHA alongside the version tag comment (e.g.,
-`uses: actions/checkout@<sha> # v4`). Renovate manages automated dependency
+`uses: actions/checkout@<sha> # v4`). Dependabot manages automated dependency
 updates.
 
 **Rationale**: A smaller dependency surface reduces supply-chain attack area,
@@ -252,7 +259,7 @@ following controls are NON-NEGOTIABLE:
   a broader scope is explicitly justified in a comment).
 - No secrets or token values MAY appear in Go `log`, `fmt.Print*`, or Actions
   `core.Info`/`core.Debug` output.
-- Dependabot/Renovate MUST remain enabled for Go modules and GitHub Actions.
+- Dependabot MUST remain enabled for Go modules and GitHub Actions.
 - The Docker base image MUST be SHA-pinned (e.g.,
   `golang:1.26-alpine@sha256:...`). Floating tags are prohibited in
   `Dockerfile`.
@@ -380,4 +387,4 @@ Clarifications, wording, typos = PATCH.
 confirming compliance with affected principles or explicitly noting a justified
 exception. Agents MUST include this in auto-generated PR bodies.
 
-**Version**: 1.3.0 | **Ratified**: 2026-03-10 | **Last Amended**: 2026-03-13
+**Version**: 1.3.1 | **Ratified**: 2026-03-10 | **Last Amended**: 2026-03-13
