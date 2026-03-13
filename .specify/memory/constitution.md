@@ -1,7 +1,7 @@
 <!--
 SYNC IMPACT REPORT
 ==================
-Version change: 1.2.1 → 1.3.1
+Version change: 1.3.0 → 1.3.1
 Modified principles: none
 Added sections:
   - Responsible Agentic Use & Pull Request Policy (new standalone section,
