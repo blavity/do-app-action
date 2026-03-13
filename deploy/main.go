@@ -34,34 +34,11 @@ func main() {
 		apps:       do.Apps,
 		httpClient: http.DefaultClient,
 		inputs:     in,
+		sleep:      time.Sleep,
 	}
 
-	spec, err := d.createSpec(ctx)
-	if err != nil {
-		a.Fatalf("failed to create spec: %v", err)
-	}
-
-	if in.deployPRPreview {
-		ghCtx, err := a.Context()
-		if err != nil {
-			a.Fatalf("failed to get GitHub context: %v", err)
-		}
-		if err := utils.SanitizeSpecForPullRequestPreview(spec, ghCtx); err != nil {
-			a.Fatalf("failed to sanitize spec for PR preview: %v", err)
-		}
-	}
-
-	app, err := d.deploy(ctx, spec)
-	if app != nil {
-		appJSON, err := json.Marshal(app)
-		if err != nil {
-			a.Warningf("failed to marshal app to JSON: %v", err)
-		} else {
-			a.SetOutput("app", string(appJSON))
-		}
-	}
-	if err != nil {
-		a.Fatalf("failed to deploy app: %v", err)
+	if err := d.run(ctx); err != nil {
+		a.Fatalf("%v", err)
 	}
 }
 
@@ -70,6 +47,35 @@ type deployer struct {
 	apps       godo.AppsService
 	httpClient *http.Client
 	inputs     inputs
+	sleep      func(time.Duration)
+}
+
+func (d *deployer) run(ctx context.Context) error {
+	spec, err := d.createSpec(ctx)
+	if err != nil {
+		return fmt.Errorf("failed to create spec: %w", err)
+	}
+
+	if d.inputs.deployPRPreview {
+		ghCtx, err := d.action.Context()
+		if err != nil {
+			return fmt.Errorf("failed to get GitHub context: %w", err)
+		}
+		if err := utils.SanitizeSpecForPullRequestPreview(spec, ghCtx); err != nil {
+			return fmt.Errorf("failed to sanitize spec for PR preview: %w", err)
+		}
+	}
+
+	app, err := d.deploy(ctx, spec)
+	if app != nil {
+		appJSON, err := json.Marshal(app)
+		if err != nil {
+			d.action.Warningf("failed to marshal app to JSON: %v", err)
+		} else {
+			d.action.SetOutput("app", string(appJSON))
+		}
+	}
+	return err
 }
 
 func (d *deployer) createSpec(ctx context.Context) (*godo.AppSpec, error) {
@@ -134,7 +140,7 @@ func (d *deployer) waitForDeployment(ctx context.Context, app *godo.App) (*godo.
 			return app, fmt.Errorf("failed to list deployments: %w", err)
 		}
 		if len(deployments) == 0 {
-			time.Sleep(5 * time.Second)
+			d.sleep(5 * time.Second)
 			continue
 		}
 
@@ -159,7 +165,7 @@ func (d *deployer) waitForDeployment(ctx context.Context, app *godo.App) (*godo.
 			return app, fmt.Errorf("deployment phase: %s", latest.Phase)
 		default:
 			d.action.Infof("Deployment phase: %s — waiting...", latest.Phase)
-			time.Sleep(5 * time.Second)
+			d.sleep(5 * time.Second)
 		}
 	}
 }
