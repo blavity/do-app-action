@@ -1,0 +1,17 @@
+version: 2
+updates:
+  # Go modules — grouped into a single PR to reduce noise
+  - package-ecosystem: gomod
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      go-modules:
+        patterns:
+          - "*"
+
+  # GitHub Actions — one PR per action update
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
