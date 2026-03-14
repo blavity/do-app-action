@@ -29,6 +29,12 @@ jobs:
       - name: Run tests
         run: task test
 
+      - name: Check coverage threshold
+        run: |
+          total=$(go tool cover -func coverage.out | awk '/^total:/{print $3}' | tr -d '%')
+          echo "Total coverage: ${total}%"
+          awk -v t="$total" 'BEGIN { if (t+0 < 80) { print "Coverage " t "% is below the 80% threshold"; exit 1 } }'
+
       - name: Upload coverage
         uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7
         with:
