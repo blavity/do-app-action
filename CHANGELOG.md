@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.0.3](https://github.com/blavity/do-app-action/compare/v1.0.2...v1.0.3) (2026-05-17)
+
+
+### Miscellaneous
+
+* **deps:** bump actions/upload-artifact from 7.0.0 to 7.0.1 ([#24](https://github.com/blavity/do-app-action/issues/24)) ([f9e799b](https://github.com/blavity/do-app-action/commit/f9e799b27c28a5b0c4068133aaf7f83439886126))
+* **deps:** bump googleapis/release-please-action from 4.4.0 to 5.0.0 ([#26](https://github.com/blavity/do-app-action/issues/26)) ([a8c3574](https://github.com/blavity/do-app-action/commit/a8c3574cbdcd553aa97ab4a990f3a4b262755caf))
+* **deps:** bump jdx/mise-action from 4.0.0 to 4.0.1 ([#21](https://github.com/blavity/do-app-action/issues/21)) ([9d992c7](https://github.com/blavity/do-app-action/commit/9d992c7c10cdcc9803ef4930d835fc4a338bdc71))
+
 ## [1.0.2](https://github.com/blavity/do-app-action/compare/v1.0.1...v1.0.2) (2026-03-14)
 
 
