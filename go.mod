@@ -3,7 +3,7 @@ module github.com/blavity/do-app-action
 go 1.23.0
 
 require (
-	github.com/digitalocean/godo v1.177.0
+	github.com/digitalocean/godo v1.178.0
 	github.com/sethvargo/go-githubactions v1.3.2
 	github.com/stretchr/testify v1.11.1
 	sigs.k8s.io/yaml v1.6.0
