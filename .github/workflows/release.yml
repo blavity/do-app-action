@@ -1,8 +1,12 @@
 # Release workflow
 #
 # Triggered by semver tags pushed by release-please (e.g., v1.2.3).
-# release-please already creates the GitHub Release; this job only
-# maintains the floating major-version tag (v1 → latest v1.x.y).
+# release-please already creates the GitHub Release; this workflow:
+#   1. Builds and pushes the Docker image to GHCR (publish-image).
+#   2. Moves the floating major-version git tag, e.g. v1 → v1.2.3 (move-major-tag).
+#
+# publish-image runs first so the GHCR image at :v1 exists before the
+# floating git tag is updated and callers start using the new version.
 
 name: Release
 
@@ -15,9 +19,51 @@ permissions:
   contents: write
 
 jobs:
+  publish-image:
+    name: Build and push Docker image to GHCR
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+
+      - name: Log in to GHCR
+        uses: docker/login-action@74a5d142397b4f367a81961eba4e8cd7edddf772 # v3.4.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Derive image tags
+        id: tags
+        env:
+          TAG: ${{ github.ref_name }}
+          REPO_OWNER: ${{ github.repository_owner }}
+        run: |
+          set -euo pipefail
+          MAJOR=$(echo "$TAG" | sed 's/\(v[0-9]*\)\..*/\1/')
+          echo "versioned=ghcr.io/${REPO_OWNER}/do-app-action:${TAG}" >> "$GITHUB_OUTPUT"
+          echo "major=ghcr.io/${REPO_OWNER}/do-app-action:${MAJOR}" >> "$GITHUB_OUTPUT"
+
+      - name: Build and push
+        uses: docker/build-push-action@263435318d21b8e681c14492fe198d362a7d2c83 # v6.18.0
+        with:
+          context: .
+          push: true
+          tags: |
+            ${{ steps.tags.outputs.versioned }}
+            ${{ steps.tags.outputs.major }}
+
   move-major-tag:
     name: Move floating major tag
+    needs: publish-image
     runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
         with:

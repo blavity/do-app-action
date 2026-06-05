@@ -43,5 +43,9 @@ outputs:
 
 runs:
   using: docker
-  image: ../Dockerfile
+  # Pre-built image published by the release workflow to GHCR.
+  # Using the floating :v1 tag keeps the action runnable in ARC Kubernetes
+  # container mode (which cannot build Dockerfile-based Docker actions) while
+  # staying on the latest v1.x patch.
+  image: docker://ghcr.io/blavity/do-app-action:v1
   args: ['deploy']
