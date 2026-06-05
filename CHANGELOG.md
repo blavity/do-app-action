@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.1.0](https://github.com/blavity/do-app-action/compare/v1.0.3...v1.1.0) (2026-06-05)
+
+
+### Features
+
+* publish pre-built Docker image to GHCR for ARC k8s container mode compatibility ([#33](https://github.com/blavity/do-app-action/issues/33)) ([77461fb](https://github.com/blavity/do-app-action/commit/77461fbede43e610a03e52427e96019976af7b76))
+
+
+### Miscellaneous
+
+* **deps:** bump actions/checkout from 6.0.2 to 6.0.3 ([#32](https://github.com/blavity/do-app-action/issues/32)) ([f5df248](https://github.com/blavity/do-app-action/commit/f5df2480088a0ec4744aa085b827ab27665238e6))
+* **deps:** bump github.com/digitalocean/godo ([#20](https://github.com/blavity/do-app-action/issues/20)) ([370624d](https://github.com/blavity/do-app-action/commit/370624d1ce1f4312d93bee87fdb8efb7b4c80b9d))
+* **deps:** bump golangci/golangci-lint-action from 9.2.0 to 9.2.1 ([#31](https://github.com/blavity/do-app-action/issues/31)) ([bc0b87f](https://github.com/blavity/do-app-action/commit/bc0b87f5fc9e988850abd0ae4f7f7c64ae9c0e00))
+
 ## [1.0.3](https://github.com/blavity/do-app-action/compare/v1.0.2...v1.0.3) (2026-05-17)
 
 
