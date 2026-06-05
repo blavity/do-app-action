@@ -3,10 +3,10 @@
 # Triggered by semver tags pushed by release-please (e.g., v1.2.3).
 # release-please already creates the GitHub Release; this workflow:
 #   1. Builds and pushes the Docker image to GHCR (publish-image).
-#   2. Moves the floating major-version git tag, e.g. v1 → v1.2.3 (move-major-tag).
 #
-# publish-image runs first so the GHCR image at :v1 exists before the
-# floating git tag is updated and callers start using the new version.
+# The floating major-version git tag (e.g. v1 → v1.2.3) is moved by
+# release-please.yml immediately after the release is created, so it does
+# not need to be handled here.
 
 name: Release
 
@@ -69,25 +69,3 @@ jobs:
             ${{ steps.tags.outputs.versioned }}
             ${{ steps.tags.outputs.major }}
 
-  move-major-tag:
-    name: Move floating major tag
-    needs: publish-image
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    permissions:
-      contents: write
-    steps:
-      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
-        with:
-          ref: ${{ inputs.tag || github.ref }}
-          fetch-depth: 0
-
-      - name: Move floating major tag
-        env:
-          TAG: ${{ inputs.tag || github.ref_name }}
-        run: |
-          MAJOR=$(echo "$TAG" | sed 's/\(v[0-9]*\)\..*/\1/')
-          git config user.name  "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git tag -fa "$MAJOR" -m "Update $MAJOR to $TAG" "$TAG"
-          git push origin "$MAJOR" --force
