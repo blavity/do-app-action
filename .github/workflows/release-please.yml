@@ -1,13 +1,14 @@
 # Release Please Workflow
 #
 # Purpose
-# Automates versioning, changelog generation, and GitHub releases for
-# do-app-action using conventional commits.
+# Automates versioning, changelog generation, GitHub releases, and floating
+# major-version tag management for do-app-action using conventional commits.
 #
 # How it works:
 #   1. On push to main → creates/updates a release PR with changelog + version bump
 #   2. On release PR merge → creates GitHub Release + git tag (e.g., v1.2.3)
-#   3. The tag triggers release.yml which moves the floating major tag (v1)
+#   3. After the release tag is created, moves the floating major tag (e.g., v1)
+#      so callers using @v1 automatically get the latest stable release.
 #
 # Conventional commits drive changelog generation:
 #   feat(archive): add pagination support    → Features
@@ -31,8 +32,39 @@ permissions:
 jobs:
   release-please:
     runs-on: ubuntu-latest
+    # workflows:write is required to force-push a floating major tag (e.g., v1)
+    # when the repository contains workflow files. Without this scope, git push
+    # is rejected with "refusing to allow a GitHub App to create or update workflow".
+    permissions:
+      contents: write
+      pull-requests: write
+      workflows: write
+    outputs:
+      release_created: ${{ steps.release.outputs.release_created }}
+      tag_name: ${{ steps.release.outputs.tag_name }}
     steps:
       - name: Run Release Please
+        id: release
         uses: googleapis/release-please-action@45996ed1f6d02564a971a2fa1b5860e934307cf7 # v5
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Checkout (for floating tag push)
+        if: steps.release.outputs.release_created == 'true'
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+
+      - name: Move floating major tag
+        if: steps.release.outputs.release_created == 'true'
+        env:
+          TAG: ${{ steps.release.outputs.tag_name }}
+        run: |
+          set -euo pipefail
+          MAJOR=$(echo "$TAG" | sed 's/\(v[0-9]*\)\..*/\1/')
+          git fetch --tags origin "$TAG"
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git tag -fa "$MAJOR" -m "Update $MAJOR to $TAG" "$TAG"
+          git push origin "$MAJOR" --force
