@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.1](https://github.com/blavity/do-app-action/compare/v1.1.0...v1.1.1) (2026-06-05)
+
+
+### Bug Fixes
+
+* **ci:** add workflow_dispatch to release.yml for manual retrigger ([#35](https://github.com/blavity/do-app-action/issues/35)) ([09ba1b8](https://github.com/blavity/do-app-action/commit/09ba1b8c517daf1021de7804c07b0a8e31c6d4d0))
+
 ## [1.1.0](https://github.com/blavity/do-app-action/compare/v1.0.3...v1.1.0) (2026-06-05)
 
 
