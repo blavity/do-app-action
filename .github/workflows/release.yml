@@ -14,6 +14,12 @@ on:
   push:
     tags:
       - 'v*.*.*'
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Existing semver tag to build and publish (e.g. v1.1.0)"
+        required: true
+        type: string
 
 permissions:
   contents: write
@@ -29,6 +35,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
+        with:
+          ref: ${{ inputs.tag || github.ref }}
 
       - name: Log in to GHCR
         uses: docker/login-action@74a5d142397b4f367a81961eba4e8cd7edddf772 # v3.4.0
@@ -40,10 +48,14 @@ jobs:
       - name: Derive image tags
         id: tags
         env:
-          TAG: ${{ github.ref_name }}
+          TAG: ${{ inputs.tag || github.ref_name }}
           REPO_OWNER: ${{ github.repository_owner }}
         run: |
           set -euo pipefail
+          if ! [[ "$TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "::error::tag must match v<major>.<minor>.<patch>, got: $TAG"
+            exit 1
+          fi
           MAJOR=$(echo "$TAG" | sed 's/\(v[0-9]*\)\..*/\1/')
           echo "versioned=ghcr.io/${REPO_OWNER}/do-app-action:${TAG}" >> "$GITHUB_OUTPUT"
           echo "major=ghcr.io/${REPO_OWNER}/do-app-action:${MAJOR}" >> "$GITHUB_OUTPUT"
@@ -71,7 +83,7 @@ jobs:
 
       - name: Move floating major tag
         env:
-          TAG: ${{ github.ref_name }}
+          TAG: ${{ inputs.tag || github.ref_name }}
         run: |
           MAJOR=$(echo "$TAG" | sed 's/\(v[0-9]*\)\..*/\1/')
           git config user.name  "github-actions[bot]"
