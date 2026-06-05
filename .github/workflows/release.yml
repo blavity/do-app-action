@@ -88,5 +88,5 @@ jobs:
           MAJOR=$(echo "$TAG" | sed 's/\(v[0-9]*\)\..*/\1/')
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git tag -fa "$MAJOR" -m "Update $MAJOR to $TAG"
+          git tag -fa "$MAJOR" -m "Update $MAJOR to $TAG" "$TAG"
           git push origin "$MAJOR" --force
