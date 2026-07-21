@@ -1,10 +1,10 @@
 module github.com/blavity/do-app-action
 
-go 1.23.0
+go 1.25
 
 require (
-	github.com/digitalocean/godo v1.195.0
-	github.com/sethvargo/go-githubactions v1.3.2
+	github.com/digitalocean/godo v1.199.0
+	github.com/sethvargo/go-githubactions v1.4.0
 	github.com/stretchr/testify v1.11.1
 	sigs.k8s.io/yaml v1.6.0
 )
