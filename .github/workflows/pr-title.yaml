@@ -1,0 +1,33 @@
+name: PR Title Lint
+
+# release-please reads COMMIT SUBJECTS on the default branch, and the squash
+# subject is the pull-request title (squash_merge_commit_title = PR_TITLE, set
+# org-wide in blavity/platform#2042). This lint is therefore the only thing
+# standing between a prose PR title and a silently skipped release: the
+# Release Please workflow succeeds when it finds nothing releasable, so a
+# missed release has no failing check to notice.
+#
+# Scope is optional and unrestricted. This repo releases a single package, so a
+# scope carries no release semantics; the `scopes` allowlist is omitted so any
+# scope that IS present is accepted, including release-please's own
+# `chore(main): …` Version PR titles.
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize, reopened, ready_for_review]
+
+permissions:
+  pull-requests: read
+
+jobs:
+  lint:
+    # NOTE: do not add `timeout-minutes` here. This job calls a reusable
+    # workflow via `uses:`, and GitHub rejects `timeout-minutes` on such a job —
+    # it invalidates the whole file, producing a zero-job startup failure that
+    # creates no check run at all. See blavity/bmg-scheduled-publisher#24.
+    permissions:
+      pull-requests: read
+    uses: blavity/shared-workflows/.github/workflows/pr-title-lint.yaml@pr-title-lint-v1.3.0
+    with:
+      require_scope: false
+      runner: ubuntu-latest
