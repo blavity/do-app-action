@@ -32,13 +32,22 @@ permissions:
 jobs:
   release-please:
     runs-on: ubuntu-latest
-    # workflows:write is required to force-push a floating major tag (e.g., v1)
-    # when the repository contains workflow files. Without this scope, git push
-    # is rejected with "refusing to allow a GitHub App to create or update workflow".
+    # NOTE: there is no `workflows` permission scope. It was declared here
+    # until 2026-08-13, which made this file INVALID — GitHub rejected it
+    # outright, so every run since was a zero-job startup failure and
+    # release-please never actually ran. The failure is silent: the run is
+    # attributed to `push`, shows the file path instead of the workflow name,
+    # and creates no check run, so nothing surfaces it.
+    #
+    # The premise was wrong as well as the syntax. The workflow-file push
+    # restriction applies to creating or updating workflow FILES with the
+    # token; moving a lightweight tag that happens to point at a commit
+    # containing workflow files is not affected. If a future change does need
+    # to write workflow files, that requires an app token or PAT — no
+    # `permissions:` value grants it.
     permissions:
       contents: write
       pull-requests: write
-      workflows: write
     outputs:
       release_created: ${{ steps.release.outputs.release_created }}
       tag_name: ${{ steps.release.outputs.tag_name }}
