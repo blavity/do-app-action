@@ -1,0 +1,48 @@
+name: PR Title Lint
+
+# The linter is inlined here rather than called as a reusable workflow.
+#
+# A PUBLIC repository cannot consume a reusable workflow from a PRIVATE one.
+# The failure gives no useful signal: the workflow file is rejected outright,
+# producing a zero-job startup failure attributed to `push`, showing the file
+# path instead of the workflow name, and creating NO check run at all — which
+# from `gh pr checks` is indistinguishable from a lint that simply has not run.
+# Inlining the action avoids that class of failure entirely.
+#
+# Check context: this job's `name:` is the whole context, `Lint PR title`. A
+# job that calls a reusable workflow instead emits `<job id> / <called job
+# name>`. The distinction matters when adding this to required status checks —
+# a required context that never appears blocks every pull request permanently.
+#
+# Why the gate exists: release-please derives releases from COMMIT SUBJECTS on
+# the default branch. When a repository squashes using the pull-request title
+# (`squash_merge_commit_title = PR_TITLE`), the title lands verbatim as the
+# commit subject, so an unlinted title becomes an unreleasable commit. That
+# failure is silent — release tooling succeeds when it finds nothing to
+# release, so a skipped release produces no failing check.
+#
+# Scope is optional and unrestricted: this repository releases a single
+# artifact, so a scope carries no release semantics. Omitting the allowlist
+# also keeps release tooling's own `chore(main): …` version-bump titles valid.
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize, reopened, ready_for_review]
+
+permissions:
+  pull-requests: read
+
+jobs:
+  lint:
+    name: Lint PR title
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      pull-requests: read
+    steps:
+      - name: Check PR title
+        uses: amannn/action-semantic-pull-request@48f256284bd46cdaab1048c3721360e808335d50 # v6.1.1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          requireScope: false
