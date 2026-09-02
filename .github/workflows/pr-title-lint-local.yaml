@@ -1,0 +1,72 @@
+# Local copy of blavity/shared-workflows pr-title-lint.
+#
+# A PUBLIC repo cannot consume a reusable workflow from a PRIVATE one: the file
+# is rejected outright, producing a zero-job startup failure with no check run —
+# indistinguishable from a lint that never ran. So the logic is copied here.
+#
+# Keep in sync with pr-title-lint-v1.5.0.
+
+name: PR Title Lint (local)
+
+on:
+  workflow_call:
+
+permissions: {}
+
+jobs:
+  lint:
+    name: Lint PR title
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      pull-requests: read
+    steps:
+      - name: Reject CI-skip markers in the PR title and body
+        id: ci_skip_markers
+        env:
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          PR_BODY: ${{ github.event.pull_request.body }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          pattern='\[[[:space:]]*(skip[[:space:]-]+(ci|actions)|(ci|actions)[[:space:]-]+skip|no[[:space:]-]+ci)[[:space:]]*\]|\*\*\*NO_CI\*\*\*'
+
+          # Squash merge concatenates title AND body into the commit message, so
+          # a marker in either stops every push workflow on the merge commit --
+          # including the release tag cut. Indirect expansion, never eval: the
+          # body is attacker-controlled text.
+          failed=""
+          for field in TITLE BODY; do
+            var="PR_$field"
+            value="${!var-}"
+            [[ -z "$value" ]] && continue
+            if printf '%s' "$value" | grep -qiE "$pattern"; then
+              failed="$failed $field"
+            fi
+          done
+
+          if [[ -n "$failed" ]]; then
+            for field in $failed; do
+              echo "::error title=CI-skip marker in PR $field::The PR $field contains a CI-skip marker."
+            done
+            cat >&2 <<'MSG'
+          A squash merge concatenates the PR title and body into the commit message,
+          so the marker reaches the merge commit on the default branch. GitHub then
+          skips every push workflow on that commit, including the release tag cut,
+          and the release silently never ships. No check fails, because none runs.
+
+          To write ABOUT a marker without arming it, break it across separate
+          inline-code spans, or say "skip-CI marker" in prose. Backticks do not help.
+
+          To skip CI on this PR, use a label your workflows gate on. A label never
+          enters a commit message.
+          MSG
+            exit 1
+          fi
+
+      - name: Check PR title
+        uses: amannn/action-semantic-pull-request@48f256284bd46cdaab1048c3721360e808335d50 # v6.1.1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          requireScope: false
