@@ -1,7 +1,7 @@
-# Thin caller so the check context matches every other repo in the org:
-# `lint / Lint PR title` (this job's id + the called job's name). A single
-# inlined job would emit just `Lint PR title`, which is a different required
-# status check — and a required context that never appears blocks every PR.
+# Thin caller so the status-check context is `lint / Lint PR title` (this job's
+# id + the called job's name). A single inlined job would emit just
+# `Lint PR title` — a different context, and a required context that never
+# appears blocks every pull request.
 
 name: PR Title Lint
 
