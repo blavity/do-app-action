@@ -1,0 +1,16 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: do-app-action
+  description: "GitHub Action for DigitalOcean App Platform: deploy, delete, archive, and unarchive apps."
+  annotations:
+    github.com/project-slug: blavity/do-app-action
+  tags:
+    - github-actions
+    - digitalocean
+    - app-platform
+    - go
+spec:
+  type: tool
+  owner: engineering
+  lifecycle: production

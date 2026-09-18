@@ -1,0 +1,20 @@
+name: Backstage catalog
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "catalog-info.yaml"
+      - ".github/workflows/backstage-catalog.yml"
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    permissions:
+      contents: read
+    uses: blavity/shared-workflows/.github/workflows/backstage-catalog-validate.yaml@89bbd76c0ac545f5bbdbbdef8cbb87553e311f70 # backstage-catalog-validate-v1.3.0
+    with:
+      root: "."
